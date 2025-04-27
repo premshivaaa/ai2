@@ -51,13 +51,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the quiz
     elements.startButton.addEventListener('click', startQuiz);
-    elements.nextButton.addEventListener('click', startQuiz);
+    elements.nextButton.addEventListener('click', loadNextQuestion);
     elements.hintButton.addEventListener('click', showHint);
 
     // Load initial history
     loadHistory();
 
     function startQuiz() {
+        if (isLoading) return;
+        loadNextQuestion();
+    }
+
+    function loadNextQuestion() {
         if (isLoading) return;
         
         isLoading = true;
@@ -82,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayQuestion(data);
                 elements.startContainer.classList.add('hidden');
                 elements.questionContainer.classList.remove('hidden');
+                elements.resultContainer.classList.add('hidden');
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -162,6 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectAnswer(selectedOption) {
+        if (isLoading) return;
+        
         disableOptions();
         showAnswerCheckingState();
         
