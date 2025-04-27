@@ -80,8 +80,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 currentQuestion = data;
                 displayQuestion(data);
+                elements.startContainer.classList.add('hidden');
+                elements.questionContainer.classList.remove('hidden');
             })
-            .catch(handleFetchError)
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorState();
+            })
             .finally(() => {
                 isLoading = false;
                 enableButtons();
@@ -111,9 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Reset hint
         resetHint();
-        
-        // Show question container
-        elements.questionContainer.classList.remove('hidden');
     }
 
     function displayImage(imageUrl) {
@@ -182,7 +184,10 @@ document.addEventListener('DOMContentLoaded', function() {
             highlightAnswers(data.correct_answer, selectedOption);
             loadHistory();
         })
-        .catch(handleFetchError);
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorState();
+        });
     }
 
     function showResultFeedback(data, selectedOption) {
@@ -305,13 +310,5 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateScoreDisplay(data) {
         elements.scoreDisplay.textContent = data.score;
         elements.totalQuestionsDisplay.textContent = data.total_questions;
-    }
-
-    // Add error handling for fetch requests
-    function handleFetchError(error) {
-        console.error('Network error:', error);
-        showErrorState();
-        isLoading = false;
-        enableButtons();
     }
 });
