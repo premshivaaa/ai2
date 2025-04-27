@@ -111,27 +111,34 @@ h1 {
     padding: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 80px;
+    min-height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 1.1rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.option-button:hover {
+.option-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.option-button:not(:disabled):hover {
     border-color: var(--primary);
     transform: translateY(-2px);
 }
 
 .correct-option {
     border-color: var(--secondary) !important;
-    background-color: rgba(3, 218, 198, 0.1);
+    background-color: rgba(3, 218, 198, 0.1) !important;
 }
 
 .incorrect-option {
     border-color: var(--error) !important;
-    background-color: rgba(207, 102, 121, 0.1);
+    background-color: rgba(207, 102, 121, 0.1) !important;
 }
 
 .difficulty {
@@ -236,7 +243,7 @@ h1 {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     padding: 0.5rem;
 }
 
@@ -299,18 +306,19 @@ h1 {
 }
 
 .result-container {
-    margin: 1rem 0;
+    margin-bottom: 1rem;
     padding: 1rem;
     border-radius: 8px;
     background-color: var(--darker-bg);
+    text-align: center;
 }
 
 #result-text {
-    text-align: center;
     font-size: 1.2rem;
     margin: 0;
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius: 8px;
+    color: var(--text-primary);
 }
 
 .quiz-container {
