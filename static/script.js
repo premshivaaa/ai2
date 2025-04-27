@@ -102,14 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayQuestion(data) {
         elements.questionText.textContent = data.question;
         
-        // Display difficulty
-        if (data.difficulty) {
-            elements.difficultyIndicator.textContent = `Difficulty: ${data.difficulty}`;
-            elements.difficultyIndicator.className = `difficulty difficulty-${data.difficulty}`;
-        }
-        
         // Display image
-        displayImage(data.image);
+        if (data.image) {
+            displayImage(data.image);
+        } else {
+            showImagePlaceholder();
+        }
         
         // Create option buttons
         createOptionButtons(data.options);
