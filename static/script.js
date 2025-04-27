@@ -78,9 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (data.error) {
-                    if (data.fallback) {
-                        return getLocalFallbackQuestion();
-                    }
                     throw new Error(data.error);
                 }
                 currentQuestion = data;
@@ -88,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 elements.startContainer.classList.add('hidden');
                 elements.questionContainer.classList.remove('hidden');
                 elements.resultContainer.classList.add('hidden');
+                elements.nextButton.disabled = true; // Disable next button until answer is selected
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -171,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isLoading) return;
         
         disableOptions();
-        showAnswerCheckingState();
         
         fetch('/check_answer', {
             method: 'POST',
@@ -189,6 +186,12 @@ document.addEventListener('DOMContentLoaded', function() {
             showResultFeedback(data, selectedOption);
             highlightAnswers(data.correct_answer, selectedOption);
             loadHistory();
+            
+            // Keep the current question visible but disable further interaction
+            elements.questionContainer.classList.remove('hidden');
+            disableOptions();
+            elements.hintButton.disabled = true;
+            elements.nextButton.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
@@ -197,12 +200,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showResultFeedback(data, selectedOption) {
-        elements.resultText.textContent = data.is_correct 
+        const resultMessage = data.is_correct 
             ? `✅ Correct! The answer is ${data.correct_answer}.` 
             : `❌ Incorrect. The correct answer is ${data.correct_answer}.`;
-        elements.resultText.className = data.is_correct ? "correct-result" : "incorrect-result";
-        elements.questionContainer.classList.add('hidden');
+        
+        // Show result message above the question
+        elements.resultText.textContent = resultMessage;
         elements.resultContainer.classList.remove('hidden');
+        
+        // Highlight the correct and incorrect answers
+        const options = elements.optionsContainer.querySelectorAll('.option-button');
+        options.forEach(button => {
+            if (button.textContent === data.correct_answer) {
+                button.classList.add('correct-option');
+            } else if (button.textContent === selectedOption && !data.is_correct) {
+                button.classList.add('incorrect-option');
+            }
+            button.disabled = true;
+        });
     }
 
     function highlightAnswers(correctAnswer, selectedOption) {
@@ -263,11 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function resetUIState() {
         elements.questionContainer.classList.add('hidden');
         elements.resultContainer.classList.add('hidden');
-        elements.startContainer.classList.add('hidden');
         elements.hintText.classList.add('hidden');
         elements.hintButton.disabled = false;
         elements.optionsContainer.innerHTML = '';
         elements.questionText.textContent = '';
+        elements.resultText.textContent = '';
         showImagePlaceholder();
     }
 
@@ -303,14 +318,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function disableButtons() {
         elements.startButton.disabled = true;
-        elements.nextButton.disabled = true;
         elements.hintButton.disabled = true;
+        elements.nextButton.disabled = true;
     }
 
     function enableButtons() {
         elements.startButton.disabled = false;
-        elements.nextButton.disabled = false;
         elements.hintButton.disabled = false;
+        elements.nextButton.disabled = true; // Next button should be disabled until an answer is selected
     }
 
     function updateScoreDisplay(data) {
