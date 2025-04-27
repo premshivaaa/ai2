@@ -95,7 +95,7 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin: 1.5rem 0;
 }
 
 .option-button {
@@ -111,6 +111,7 @@ h1 {
     align-items: center;
     justify-content: center;
     text-align: center;
+    font-size: 1.1rem;
 }
 
 .option-button:hover {
@@ -230,6 +231,7 @@ h1 {
     gap: 1rem;
     justify-content: center;
     margin: 1.5rem 0;
+    padding: 0.5rem;
 }
 
 /* Update button styles */
@@ -246,6 +248,8 @@ h1 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    min-width: 150px;
+    justify-content: center;
 }
 
 .hint-button:hover, .next-button:hover, .start-button:hover {
@@ -269,6 +273,7 @@ h1 {
     color: var(--dark-bg);
     font-size: 1.2rem;
     padding: 1rem 2rem;
+    min-width: 200px;
 }
 
 .next-button {
