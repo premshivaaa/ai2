@@ -80,6 +80,7 @@ def generate_question(difficulty):
             "difficulty": "{difficulty}"
         }}
         Return ONLY the JSON object, no additional text or markdown.
+        Make sure the options are clear and distinct from each other.
         """
         
         response = model.generate_content(prompt)
@@ -106,6 +107,14 @@ def generate_question(difficulty):
             
         if question_data['question'] in session.get('used_questions', []):
             raise ValueError("Duplicate question generated")
+        
+        # Shuffle options while keeping track of correct answer
+        options = question_data['options'].copy()
+        correct_answer = question_data['correct_answer']
+        random.shuffle(options)
+        
+        # Update the question data with shuffled options
+        question_data['options'] = options
             
         return question_data
         
@@ -116,14 +125,26 @@ def generate_question(difficulty):
                             if q['question'] not in session.get('used_questions', [])]
         
         if available_questions:
-            return random.choice(available_questions)
+            question = random.choice(available_questions)
+            # Shuffle options for fallback questions too
+            options = question['options'].copy()
+            random.shuffle(options)
+            question['options'] = options
+            return question
         else:
             # If all fallbacks used, reset and reuse
             session['used_questions'] = []
-            return random.choice(FALLBACK_QUESTIONS)
+            question = random.choice(FALLBACK_QUESTIONS)
+            options = question['options'].copy()
+            random.shuffle(options)
+            question['options'] = options
+            return question
 
 def get_location_image(query):
     try:
+        # Clean the query to improve search results
+        query = query.strip().lower()
+        
         url = f"https://api.foursquare.com/v3/places/search?query={query}&limit=1"
         headers = {
             "Accept": "application/json",
@@ -185,11 +206,14 @@ def get_question():
             'timestamp': datetime.now().isoformat()
         }
         
+        # Get image for the correct answer
+        image_url = get_location_image(question_data['correct_answer'])
+        
         return jsonify({
             'question': question_data['question'],
             'options': question_data['options'],
             'hint': question_data['hint'],
-            'image': get_location_image(question_data['correct_answer']),
+            'image': image_url,
             'difficulty': question_data['difficulty']
         })
         
